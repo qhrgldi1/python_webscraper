@@ -4,11 +4,6 @@ from bs4 import BeautifulSoup
 # html 가져오기 위한 라이브러리
 indeed_result = requests.get("https://www.indeed.com/jobs?q=python&limit=50")
 
-'''
-# html 전체 출력
-print(indeed_result.text)
-'''
-
 # soup 생성, indeed_result 페이지의 html 추출
 indeed_soup = BeautifulSoup(indeed_result.text, "html.parser")
 
@@ -16,14 +11,16 @@ indeed_soup = BeautifulSoup(indeed_result.text, "html.parser")
 pagination = indeed_soup.find("div", {"class":"pagination"})
 
 # 해당 모든 태그를 불러옴(리스트 형식)
-pages = pagination.find_all("a")
+links = pagination.find_all("a")
 
 # 빈 list 생성
-spans = []
+pages = []
 
-# span 태그를 spans 리스트에 추가함 (for)
-for page in pages:
-    spans.append(page.find("span"))
+# span 태그를 pages 리스트에 추가함 (for)
+# 마지막 요소인 "next..."를 제외하기 위해 links의 슬라이싱을 지정
+for link in links[:-1]:
+    # anchor 태그(links) 안에 있는 text만 가져오기 (string)
+    pages.append(int(link.string))
 
-# 마지막 리스트 요소를 제외하고 출력
-print(spans[:-1])
+# 마지막 페이지
+max_page = pages[-1]
