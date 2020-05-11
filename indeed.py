@@ -34,8 +34,22 @@ def extract_indeed_pages():
 
 # 마지막 페이지까지 잘 동작하는지 확인하는 함수
 def extract_indeed_jobs(last_page):
-    for page in range(last_page):
-        result = requests.get(f"{URL}&start={page*LIMIT}")
+    jobs = []
+    #for page in range(last_page):
+    result = requests.get(f"{URL}&start={0*LIMIT}")
 
-        # status_code로 잘 동작하는지 확인 (code:200이 20번 출력됨)
-        print(result.status_code)
+    # 직업 공고를 가져오기 위한 soup 준비
+    soup = BeautifulSoup(result.text, "html.parser")
+
+    # 직업 공고의 div 클래스를 모두 가져옴 -> results에 저장(리스트)
+    results = soup.find_all("div", {"class":"jobsearch-SerpJobCard"})
+
+    # h2 title 태그를 모두 가져옴
+    for result in results:
+        '''
+        먼저 h2태그의 title class를 가져온 후
+        title 안의 anchor의 attribute title(공고 제목)을 가져옴
+        '''
+        title = result.find("h2", {"class":"title"}).find("a")["title"]
+        print(title)
+    return jobs
