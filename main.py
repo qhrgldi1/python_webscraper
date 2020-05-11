@@ -5,4 +5,6 @@ from indeed import extract_indeed_pages, extract_indeed_jobs
 last_indeed_pages = extract_indeed_pages()
 
 # 마지막 페이지를 인자로 받아 정상적으로 동작하는지 확인하는 함수
-extract_indeed_jobs(last_indeed_pages)
+indeed_jobs = extract_indeed_jobs(last_indeed_pages)
+
+print(indeed_jobs)

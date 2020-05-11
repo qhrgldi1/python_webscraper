@@ -32,38 +32,64 @@ def extract_indeed_pages():
     max_page = pages[-1]
     return max_page
 
-# 마지막 페이지까지 잘 동작하는지 확인하는 함수
+# indeed 각 페이지의 직업, 회사명, 지역을 추출하는 함수
+def extract_job(html):
+    '''
+    먼저 h2태그의 title class를 가져온 후
+    title 안의 anchor의 attribute title(공고 제목)을 가져옴
+    '''
+    title = html.find("h2", {"class":"title"}).find("a")["title"]
+    
+    # 회사명 가져오기
+    company = html.find("span", {"class": "company"})
+    company_anchor = company.find("a")
+    
+    # 회사명이 anchor로 지정되어 있다면 if, 아니면 else
+    # 출력 결과 빈칸이 많아 str로 형변환
+    if company_anchor is not None:
+        company = str(company_anchor.string)
+    else:
+        company = str(company.string)
+
+    # 양 끝의 공백을 없애는 strip
+    company = company.strip()
+
+    # 지역명 가져오기
+    # div 클래스에서 display: none 항목이 있어 None인 지역명이 있기 때문에
+    # Attribute로 가져옴
+    location = html.find("div", {"class":"recJobLoc"})["data-rc-loc"]
+
+    # Apply 링크를 가져오기 위한 URL안의 ID 가져오기
+    job_id = html["data-jk"]
+
+    return {
+        'title': title, 
+        'company': company, 
+        'location': location, 
+        'link': f"https://www.indeed.com/viewjob?jk={job_id}"
+    }
+
+
+# extract_job 함수에서 받은 정보를 jobs 리스트에 저장하여 return 하는 함수
 def extract_indeed_jobs(last_page):
+    # 직업과 회사명 dictionary를 추가할 'jobs' list 생성
     jobs = []
-    #for page in range(last_page):
-    result = requests.get(f"{URL}&start={0*LIMIT}")
 
-    # 직업 공고를 가져오기 위한 soup 준비
-    soup = BeautifulSoup(result.text, "html.parser")
+    for page in range(last_page):
+        # 페이지 세기 위한 print
+        print(f"Scrapping page {page}")
 
-    # 직업 공고의 div 클래스를 모두 가져옴 -> results에 저장(리스트)
-    results = soup.find_all("div", {"class":"jobsearch-SerpJobCard"})
+        result = requests.get(f"{URL}&start={page*LIMIT}")
 
-    # h2 title 태그를 모두 가져옴
-    for result in results:
-        '''
-        먼저 h2태그의 title class를 가져온 후
-        title 안의 anchor의 attribute title(공고 제목)을 가져옴
-        '''
-        title = result.find("h2", {"class":"title"}).find("a")["title"]
-        
-        # 회사명 가져오기
-        company = result.find("span", {"class": "company"})
-        company_anchor = company.find("a")
-        
-        # 회사명이 anchor로 지정되어 있다면 if, 아니면 else
-        # 출력 결과 빈칸이 많아 str로 형변환
-        if company_anchor is not None:
-            company = str(company_anchor.string)
-        else:
-            company = str(company.string)
+        # 직업 공고를 가져오기 위한 soup 준비
+        soup = BeautifulSoup(result.text, "html.parser")
 
-        # 양 끝의 공백을 없애는 strip
-        company = company.strip()
-        print(title, company)
+        # 직업 공고의 div 클래스를 모두 가져옴 -> results에 저장(리스트)
+        results = soup.find_all("div", {"class":"jobsearch-SerpJobCard"})
+
+        # 직업과 회사명을 출력하는 부분을 extract_job으로 따로 함수 생성
+        for result in results:
+            job = extract_job(result)
+            jobs.append(job)
+
     return jobs
