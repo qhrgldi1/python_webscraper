@@ -51,5 +51,19 @@ def extract_indeed_jobs(last_page):
         title 안의 anchor의 attribute title(공고 제목)을 가져옴
         '''
         title = result.find("h2", {"class":"title"}).find("a")["title"]
-        print(title)
+        
+        # 회사명 가져오기
+        company = result.find("span", {"class": "company"})
+        company_anchor = company.find("a")
+        
+        # 회사명이 anchor로 지정되어 있다면 if, 아니면 else
+        # 출력 결과 빈칸이 많아 str로 형변환
+        if company_anchor is not None:
+            company = str(company_anchor.string)
+        else:
+            company = str(company.string)
+
+        # 양 끝의 공백을 없애는 strip
+        company = company.strip()
+        print(title, company)
     return jobs
