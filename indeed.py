@@ -6,7 +6,7 @@ LIMIT = 50
 URL = f"https://www.indeed.com/jobs?q=python&limit={LIMIT}"
 
 # Indeed 웹사이트의 page를 추출하기 위한 함수 정의
-def extract_indeed_pages():
+def get_last_page():
     # html 가져오기 위한 라이브러리
     result = requests.get(URL)
 
@@ -71,7 +71,7 @@ def extract_job(html):
 
 
 # extract_job 함수에서 받은 정보를 jobs 리스트에 저장하여 return 하는 함수
-def extract_indeed_jobs(last_page):
+def extract_jobs(last_page):
     # 직업과 회사명 dictionary를 추가할 'jobs' list 생성
     jobs = []
 
@@ -92,4 +92,13 @@ def extract_indeed_jobs(last_page):
             job = extract_job(result)
             jobs.append(job)
 
+    return jobs
+
+
+def get_jobs():
+    # 마지막 페이지 return : get_last_page
+    last_page = get_last_page()
+
+    # 마지막 페이지를 인자로 받아 채용 공고 Scrapper (채용 제목, 회사명, 지역명, apply url)
+    jobs = extract_jobs(last_page)
     return jobs
