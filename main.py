@@ -2,10 +2,8 @@
 from indeed import get_jobs as get_indeed_jobs
 from so import get_jobs as get_so_jobs
 
-# indeed 웹 스크래퍼 완성
-# indeed_jobs = get_indeed_jobs()
-# print(indeed_jobs)
+so_jobs = get_so_jobs() # StackOverflow Jobs Scrapping
+indeed_jobs = get_indeed_jobs() # Indeed Jobs Scrapping
+jobs = so_jobs + indeed_jobs # 둘을 합침
 
-# StackOverflow
-so_jobs = get_so_jobs()
-print(so_jobs)
+print(jobs)

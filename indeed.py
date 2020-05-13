@@ -77,7 +77,7 @@ def extract_jobs(last_page):
 
     for page in range(last_page):
         # 페이지 세기 위한 print
-        print(f"Scrapping page {page}")
+        print(f"Scrapping Indeed: Page: {page}")
 
         result = requests.get(f"{URL}&start={page*LIMIT}")
 
