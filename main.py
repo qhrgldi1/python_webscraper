@@ -8,3 +8,4 @@ from so import get_jobs as get_so_jobs
 
 # StackOverflow
 so_jobs = get_so_jobs()
+print(so_jobs)

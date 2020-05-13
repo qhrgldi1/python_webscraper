@@ -8,19 +8,35 @@ def get_last_page():
     result = requests.get(URL)
     soup = BeautifulSoup(result.text, "html.parser")
     pages = soup.find("div", {"class": "s-pagination"}).find_all("a")
-    last_pages = pages[-3].get_text(strip=True)
+    last_pages = pages[-3].get_text(strip=True) # 마지막 페이지
     return int(last_pages)  # last_pages 변수를 range 함수에 쓰기 위해 integer로 변환
 
+def extract_job(html):
+    # title : 구인 제목, company : 회사명, location : 지역명
+    title = html.find("a", {"class": "s-link"})["title"]
+    company = html.find("h3", {"class": "fc-black-700"}).find("span").get_text(strip=True)
+    location = html.find("span", {"class": "fc-black-500"}).get_text(strip=True)
+    
+    return {
+        'title': title,
+        'company': company,
+        'location': location
+    }
+
+# 모든 페이지의 직업 set(title, company, location)를 추출하여 jobs 리스트에 저장
 def extract_jobs(last_page):
     jobs = []
     for page in range(last_page):
+        print(f"Scrapping page {page+1}")
         result = requests.get(f"{URL}&pg={page+1}")
         soup = BeautifulSoup(result.text, "html.parser")
         results = soup.find_all("div", {"class": "-job"})
 
-        # 공고별로 부여된 jobid 가져오기
         for result in results:
-            print(result["data-jobid"])
+            job = extract_job(result)
+            jobs.append(job)
+
+    return jobs
 
 # 직업 공고를 가져오는 함수
 def get_jobs():
